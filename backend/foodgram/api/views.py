@@ -28,9 +28,9 @@ class CustomUserCreateView(UserViewSet):
     """
     Custom User creation view with additional actions.
 
-    - `me`: Retrieve current user's data.
-    - `subscribe`: Subscribe to or unsubscribe from a user.
-    - `subscriptions`: Get a list of user subscriptions.
+    - me: Retrieve current user's data.
+    - subscribe: Subscribe to or unsubscribe from a user.
+    - subscriptions: Get a list of user subscriptions.
     """
 
     serializer_class = CustomUserCreateSerializer
@@ -124,9 +124,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     Supports creating, reading, updating, and deleting recipes.
 
-    - `favorite`: Add or remove a recipe from favorites.
-    - `shopping_cart`: Add or remove a recipe from the shopping cart.
-    - `download_shopping_cart`: Download the shopping cart as a TXT file.
+    - favorite: Add or remove a recipe from favorites.
+    - shopping_cart: Add or remove a recipe from the shopping cart.
+    - download_shopping_cart: Download the shopping cart as a TXT file.
     """
 
     queryset = Recipe.objects.all()
@@ -187,7 +187,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        """Метод для скачивания списка покупок в формате txt."""
+        """Method for downloading a shopping list in txt format."""
+
         user = request.user
         if not user.cart.exists():
             return Response(

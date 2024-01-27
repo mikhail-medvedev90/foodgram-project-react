@@ -5,8 +5,6 @@ class IsAdminOrReadOnly(BasePermission):
     """
     Permission class that allows read-only access for unauthenticated users.
 
-    Full access for authenticated users, including admin users.
-
     For safe methods (GET, HEAD, OPTIONS), all users are allowed.
     For other methods, only authenticated users with admin privileges
     or the author of the object are allowed.

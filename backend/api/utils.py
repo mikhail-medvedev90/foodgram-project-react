@@ -22,8 +22,6 @@ def generate_shopping_list(user):
         for ingredient in ingredients
     ])
 
-    shopping_list += '''\n
-We look forward to seeing you again on our website!
-'''
+    shopping_list += 'We look forward to seeing you again on our website!'
 
     return shopping_list
