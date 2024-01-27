@@ -4,6 +4,7 @@ from recipes.models import RecipeIngredient
 
 def generate_shopping_list(user):
     """Generate a list of products that need to be bought."""
+    
     ingredients = RecipeIngredient.objects.filter(
         recipe__cart__user=user
     ).values(
@@ -20,13 +21,6 @@ def generate_shopping_list(user):
         for ingredient in ingredients
     ])
 
-    shopping_list += f'''\n
-We look forward to seeing you again on our website!
-
-Cooked a recipe from Foodgram? Share it on Instagram!
-Tag our page @foodgram and win prizes! 
-
-Have a nice meal <3
-'''
+    shopping_list += f'''We look forward to seeing you again on our website!'''
 
     return shopping_list
