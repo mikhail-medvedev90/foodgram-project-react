@@ -1,0 +1,2 @@
+[flake8]
+exclude = *settings.py, *urls.py, foodgram/api/utils.py
