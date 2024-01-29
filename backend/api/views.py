@@ -1,6 +1,6 @@
 from django.http import HttpResponse
+from django.db.models import Sum
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
 from djoser.serializers import UserCreateSerializer
@@ -27,7 +27,8 @@ from recipes.models import (Ingredient,
                             Recipe,
                             Tag,
                             FavoriteRecipe,
-                            ShoppingCart)
+                            ShoppingCart,
+                            RecipeIngredient)
 
 User = get_user_model()
 
@@ -138,9 +139,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return RecipeWriteSerializer
 
     def add_recipe(self, serializer_class, user, pk):
-        recipe = get_object_or_404(Recipe, id=pk)
         serializer = serializer_class(
-            data={'user': user.id, 'recipe': recipe.id},
+            data={'user': user.id, 'recipe': pk},
             context={'request': self.request}
         )
         serializer.is_valid(raise_exception=True)
@@ -149,10 +149,10 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def delete_recipe(model, user, pk):
-        get_object_or_404(
-            model, user=user, recipe__id=pk
-        ).delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        amount, _ = model.objects.filter(user=user, recipe__id=pk).delete()
+        if amount > 0:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=True,
@@ -198,3 +198,28 @@ class RecipeViewSet(viewsets.ModelViewSet):
         response['Content-Disposition'] = f'attachment; filename={filename}'
 
         return response
+
+    def generate_shopping_list(self, user):
+        """Generate a list of products that need to be bought."""
+
+        ingredients = RecipeIngredient.objects.filter(
+            recipe__cart__user=user
+        ).values(
+            'ingredient__name',
+            'ingredient__measurement_unit'
+        ).annotate(amount=Sum('amount'))
+
+        shopping_list = (
+            f'{user.first_name}'
+            f'You need to buy the following')
+
+        shopping_list += '\n'.join([
+            f'- {ingredient["ingredient__name"]} '
+            f'({ingredient["ingredient__measurement_unit"]})'
+            f' - {ingredient["amount"]}'
+            for ingredient in ingredients
+        ])
+
+        shopping_list += 'We look forward to seeing you again on our website!'
+
+        return shopping_list

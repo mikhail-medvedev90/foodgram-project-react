@@ -1,7 +1,7 @@
-from rest_framework.permissions import SAFE_METHODS, BasePermission
+from rest_framework.permissions import SAFE_METHODS, IsAuthenticatedOrReadOnly
 
 
-class IsAdminOrReadOnly(BasePermission):
+class IsAdminOrReadOnly(IsAuthenticatedOrReadOnly):
     """
     Permission class that allows read-only access for unauthenticated users.
     For safe methods (GET, HEAD, OPTIONS), all users are allowed.
@@ -9,16 +9,10 @@ class IsAdminOrReadOnly(BasePermission):
     or the author of the object are allowed.
     """
 
-    def has_permission(self, request, view):
-        return (
-            request.method in SAFE_METHODS
-            or request.user.is_authenticated
-        )
-
     def has_object_permission(self, request, view, obj):
         return (
             request.method in SAFE_METHODS
-            or obj.author == request.user
             or request.user.is_staff
             or request.user.is_superuser
+            or obj.author == request.user
         )

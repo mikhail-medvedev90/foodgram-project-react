@@ -4,13 +4,12 @@ from django.core.validators import (MinValueValidator,
                                     RegexValidator)
 from django.db import models
 
+from .constants import (hex_regex_pattern,
+                        DEFAULT_FIELD_LENGHT,
+                        MIN_VALUE_REQUIRED,
+                        MAX_VALUE_LIMIT)
+
 User = get_user_model()
-
-hex_regex_pattern = r'#([A-Fa-f0-9]{6})|#([A-Fa-f0-9]{3})|#([A-Fa-f0-9]{8})'
-
-DEFAULT_FIELD_LENGHT = 200
-MIN_VALUE_REQUIRED = 1
-MAX_VALUE_LIMIT = 1440
 
 
 class Tag(models.Model):
@@ -91,11 +90,17 @@ class Recipe(models.Model):
         validators=[
             MinValueValidator(
                 MIN_VALUE_REQUIRED,
-                message='Cooking time must be at least 1 minute.',
+                message=(
+                    f'Cooking time must be at least'
+                    f'{MIN_VALUE_REQUIRED} minute.'
+                ),
             ),
             MaxValueValidator(
                 MAX_VALUE_LIMIT,
-                message='Cooking time cannot be greater than 1440 (24hours)'
+                message=(
+                    f'Cooking time cannot be greater than'
+                    f'{MAX_VALUE_LIMIT} minute.'
+                ),
             ),
         ],
     )
@@ -158,11 +163,11 @@ class RecipeIngredient(models.Model):
         validators=(
             MinValueValidator(
                 MIN_VALUE_REQUIRED,
-                message='Amount must be at least 1.',
+                message=f'Amount must be at least {MIN_VALUE_REQUIRED}.',
             ),
             MaxValueValidator(
                 MAX_VALUE_LIMIT,
-                message='Amount must be at most 1111.',
+                message=f'Amount must be at most {MAX_VALUE_LIMIT}.',
             )
         ),
     )

@@ -2,22 +2,20 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-DEFAULT_NAME_LENGTH = 150
-EMAIL_LENGTH = 254
+from .constants import DEFAULT_NAME_LENGTH
 
 
 class User(AbstractUser):
     """Custom user model."""
 
-    first_name = models.CharField('first name', max_length=DEFAULT_NAME_LENGTH)
-    last_name = models.CharField('last name', max_length=DEFAULT_NAME_LENGTH)
-
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ('username', 'first_name', 'last_name',)
 
+    first_name = models.CharField('first name', max_length=DEFAULT_NAME_LENGTH)
+    last_name = models.CharField('last name', max_length=DEFAULT_NAME_LENGTH)
+
     email = models.EmailField(
         "email address",
-        max_length=EMAIL_LENGTH,
         unique=True,
     )
 
@@ -28,7 +26,7 @@ class User(AbstractUser):
         Defaults to ordering by id.
         """
 
-        ordering = ('id',)
+        ordering = ('first_name', 'last_name',)
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 

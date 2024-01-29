@@ -1,11 +1,13 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import (Ingredient, Recipe, RecipeIngredient, Tag,
-                     FavoriteRecipe, ShoppingCart)
-
-EXTRA_INGREDIENTS_FIELDS = 5
-MINIMUM_REQUIRED = 1
+from .constants import EXTRA_INGREDIENTS_FIELDS, MINIMUM_REQUIRED
+from .models import (Ingredient,
+                     Recipe,
+                     RecipeIngredient,
+                     Tag,
+                     FavoriteRecipe,
+                     ShoppingCart)
 
 
 class RecipeIngredientInline(admin.TabularInline):

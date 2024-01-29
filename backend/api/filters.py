@@ -11,7 +11,7 @@ User = get_user_model()
 class RecipeFilter(FilterSet):
     """Custom filter for recipes."""
 
-    tags = filters.ModelMultipleChoiceFilter(
+    tags = filters.AllValuesMultipleFilter(
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all(),
@@ -32,18 +32,14 @@ class RecipeFilter(FilterSet):
         fields = ('tags', 'author',)
 
     def filter_is_in_shopping_cart(self, queryset, name, value):
-        if self.request.user.is_authenticated:
-            if value:
-                return queryset.filter(cart__user=self.request.user)
-            return queryset.exclude(cart__user=self.request.user)
-        return queryset.none()
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(cart__user=self.request.user)
+        return queryset
 
     def filter_is_favorited(self, queryset, name, value):
-        if self.request.user.is_authenticated:
-            if value:
-                return queryset.filter(favorites__user=self.request.user)
-            return queryset.exclude(favorites__user=self.request.user)
-        return queryset.none()
+        if self.request.user.is_authenticated and value:
+            return queryset.filter(favorites__user=self.request.user)
+        return queryset
 
 
 class IngredientSearchFilter(SearchFilter):
