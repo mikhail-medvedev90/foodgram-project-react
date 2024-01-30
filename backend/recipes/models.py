@@ -1,13 +1,11 @@
 from django.contrib.auth import get_user_model
-from django.core.validators import (MinValueValidator,
-                                    MaxValueValidator,
+from django.core.validators import (MaxValueValidator, MinValueValidator,
                                     RegexValidator)
 from django.db import models
 
-from .constants import (hex_regex_pattern,
-                        DEFAULT_FIELD_LENGHT,
-                        MIN_VALUE_REQUIRED,
-                        MAX_VALUE_LIMIT)
+from .constants import (DEFAULT_FIELD_LENGHT, HEX_REGEX_PATTERN,
+                        MAX_VALUE_LIMIT, MAX_VALUE_LIMIT_MESSAGE,
+                        MIN_VALUE_REQUIRED, MIN_VALUE_REQUIRED_MESSAGE)
 
 User = get_user_model()
 
@@ -27,7 +25,7 @@ class Tag(models.Model):
         help_text='Input color value in hex format starting with #.',
         validators=(
             RegexValidator(
-                regex=hex_regex_pattern,
+                regex=HEX_REGEX_PATTERN,
                 message=(
                     'Enter a valid hex color code. Example: #000000. '
                     'Hint: HEX color in short format and with alpha channel '
@@ -90,17 +88,11 @@ class Recipe(models.Model):
         validators=[
             MinValueValidator(
                 MIN_VALUE_REQUIRED,
-                message=(
-                    f'Cooking time must be at least'
-                    f'{MIN_VALUE_REQUIRED} minute.'
-                ),
+                message=MIN_VALUE_REQUIRED_MESSAGE,
             ),
             MaxValueValidator(
                 MAX_VALUE_LIMIT,
-                message=(
-                    f'Cooking time cannot be greater than'
-                    f'{MAX_VALUE_LIMIT} minute.'
-                ),
+                message=MAX_VALUE_LIMIT_MESSAGE
             ),
         ],
     )
@@ -163,11 +155,11 @@ class RecipeIngredient(models.Model):
         validators=(
             MinValueValidator(
                 MIN_VALUE_REQUIRED,
-                message=f'Amount must be at least {MIN_VALUE_REQUIRED}.',
+                message=MIN_VALUE_REQUIRED_MESSAGE,
             ),
             MaxValueValidator(
                 MAX_VALUE_LIMIT,
-                message=f'Amount must be at most {MAX_VALUE_LIMIT}.',
+                message=MAX_VALUE_LIMIT_MESSAGE,
             )
         ),
     )

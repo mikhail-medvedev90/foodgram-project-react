@@ -2,8 +2,8 @@ from rest_framework.pagination import (LimitOffsetPagination,
                                        PageNumberPagination)
 
 from .constants import (RECIPE_PAGINATION_PAGE_SIZE,
-                        USER_PAGINATION_PAGE_SIZE,
-                        USER_PAGINATION_DEFAULT_LIMIT)
+                        USER_PAGINATION_DEFAULT_LIMIT,
+                        USER_PAGINATION_PAGE_SIZE)
 
 
 class RecipePagination(PageNumberPagination):

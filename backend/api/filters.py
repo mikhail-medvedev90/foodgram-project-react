@@ -11,7 +11,7 @@ User = get_user_model()
 class RecipeFilter(FilterSet):
     """Custom filter for recipes."""
 
-    tags = filters.AllValuesMultipleFilter(
+    tags = filters.ModelMultipleChoiceFilter(
         field_name='tags__slug',
         to_field_name='slug',
         queryset=Tag.objects.all(),

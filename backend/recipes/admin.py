@@ -1,13 +1,11 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .constants import EXTRA_INGREDIENTS_FIELDS, MINIMUM_REQUIRED
-from .models import (Ingredient,
-                     Recipe,
-                     RecipeIngredient,
-                     Tag,
-                     FavoriteRecipe,
-                     ShoppingCart)
+from .models import (FavoriteRecipe, Ingredient, Recipe, RecipeIngredient,
+                     ShoppingCart, Tag)
+
+EXTRA_INGREDIENTS_FIELDS = 5
+MINIMUM_REQUIRED = 1
 
 
 class RecipeIngredientInline(admin.TabularInline):
@@ -22,7 +20,7 @@ class RecipeIngredientInline(admin.TabularInline):
     readonly_fields = ('measurement_unit',)
     extra = EXTRA_INGREDIENTS_FIELDS
     min_num = MINIMUM_REQUIRED
-    empty_value_display = ('Add and save an ingredient first.')
+    empty_value_display = 'Add and save an ingredient first.'
 
     def measurement_unit(self, obj):
         return obj.ingredient.measurement_unit

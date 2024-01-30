@@ -1,34 +1,25 @@
-from django.http import HttpResponse
-from django.db.models import Sum
 from django.contrib.auth import get_user_model
+from django.db.models import Sum
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
 from djoser.serializers import UserCreateSerializer
+from djoser.views import UserViewSet
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
 
-from .utils import generate_shopping_list
+from recipes.models import (FavoriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Tag)
+from users.models import Subscribe
 from .filters import IngredientSearchFilter, RecipeFilter
 from .pagination import RecipePagination, UserPagination
 from .permissions import IsAdminOrReadOnly
-from .serializers import (FavoriteRecipeSerializer,
-                          IngredientSerializer,
-                          RecipeReadSerializer,
-                          RecipeWriteSerializer,
-                          ShoppingCartSerializer,
-                          SubscribeSerializer,
-                          TagSerializer,
-                          UserSerializer,
-                          UserSubscriptionList)
-from users.models import Subscribe
-from recipes.models import (Ingredient,
-                            Recipe,
-                            Tag,
-                            FavoriteRecipe,
-                            ShoppingCart,
-                            RecipeIngredient)
+from .serializers import (FavoriteRecipeSerializer, IngredientSerializer,
+                          RecipeReadSerializer, RecipeWriteSerializer,
+                          ShoppingCartSerializer, SubscribeSerializer,
+                          TagSerializer, UserSerializer, UserSubscriptionList)
 
 User = get_user_model()
 
@@ -59,9 +50,13 @@ class CustomUserCreateView(UserViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def subscribe(self, request, id):
-        author = self.get_object()
+        author = get_object_or_404(User, id=id)
+        user = self.request.user
         serializer = SubscribeSerializer(
-            data={'id': author.id}, context={'request': request}
+            data={
+                'user': user.id,
+                'author': author.id
+            }, context={'request': request}
         )
         serializer.is_valid(raise_exception=True)
         serializer.save()
@@ -149,10 +144,12 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @staticmethod
     def delete_recipe(model, user, pk):
-        amount, _ = model.objects.filter(user=user, recipe__id=pk).delete()
-        if amount > 0:
-            return Response(status=status.HTTP_204_NO_CONTENT)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        recipe = get_object_or_404(Recipe, id=pk)
+        quantity_deleted, _ = model.objects.filter(user=user,
+                                                   recipe=recipe).delete()
+        if not quantity_deleted:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=True,
@@ -188,7 +185,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         user = request.user
 
-        shopping_list = generate_shopping_list(user)
+        shopping_list = self.generate_shopping_list(user)
 
         filename = f'{user.username}_shopping_list.txt'
         response = HttpResponse(
@@ -209,9 +206,8 @@ class RecipeViewSet(viewsets.ModelViewSet):
             'ingredient__measurement_unit'
         ).annotate(amount=Sum('amount'))
 
-        shopping_list = (
-            f'{user.first_name}'
-            f'You need to buy the following')
+        shopping_list = (f'{user.first_name}, '
+                         f'You need to buy the following:\n\n')
 
         shopping_list += '\n'.join([
             f'- {ingredient["ingredient__name"]} '

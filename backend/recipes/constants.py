@@ -1,6 +1,8 @@
-hex_regex_pattern = r'#([A-Fa-f0-9]{6})|#([A-Fa-f0-9]{3})|#([A-Fa-f0-9]{8})'
+HEX_REGEX_PATTERN = r'#([A-Fa-f0-9]{6})|#([A-Fa-f0-9]{3})|#([A-Fa-f0-9]{8})'
+
 DEFAULT_FIELD_LENGHT = 200
 MIN_VALUE_REQUIRED = 1
 MAX_VALUE_LIMIT = 32000
-EXTRA_INGREDIENTS_FIELDS = 5
-MINIMUM_REQUIRED = 1
+
+MIN_VALUE_REQUIRED_MESSAGE = 'Must be at least 1.'
+MAX_VALUE_LIMIT_MESSAGE = 'Cannot be greater than 32000'

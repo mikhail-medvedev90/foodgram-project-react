@@ -1,8 +1,7 @@
-"""Models with custom user model and subscription model."""
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-from .constants import DEFAULT_NAME_LENGTH
+DEFAULT_NAME_LENGTH = 150
 
 
 class User(AbstractUser):
@@ -13,9 +12,8 @@ class User(AbstractUser):
 
     first_name = models.CharField('first name', max_length=DEFAULT_NAME_LENGTH)
     last_name = models.CharField('last name', max_length=DEFAULT_NAME_LENGTH)
-
     email = models.EmailField(
-        "email address",
+        'email address',
         unique=True,
     )
 
@@ -26,7 +24,7 @@ class User(AbstractUser):
         Defaults to ordering by id.
         """
 
-        ordering = ('first_name', 'last_name',)
+        ordering = ('email',)
         verbose_name = 'User'
         verbose_name_plural = 'Users'
 
